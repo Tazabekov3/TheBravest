@@ -5,8 +5,19 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float speed = 5f;
+    private Vector2 movement;
     private Rigidbody2D body;
     private Animator animator;
+
+    private bool isDashing = false;
+    private bool canDash = true;
+    private float dashSpeed = 15f;
+    private float dashDuration = 0.1f;
+    private float dashCooldown = 1f;
+
+    private bool isAttacking = false;
+    private bool canAttack = true;
+    private float attackCooldown = 0.2f;
 
     // Start is called before the first frame update
     void Start()
@@ -18,11 +29,14 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        animator.SetBool("isDashing", isDashing);
+        if (isDashing) return;
+
         float moveHorizontal = Input.GetAxisRaw("Horizontal");
         float moveVertical = Input.GetAxisRaw("Vertical");
 
-        Vector2 movement = new Vector2(moveHorizontal, moveVertical).normalized * speed;
-        body.velocity = movement;
+        movement = new Vector2(moveHorizontal, moveVertical).normalized;
+        body.velocity = movement * speed;
 
         if (moveHorizontal > 0.01f)
             transform.localScale = Vector3.one;
@@ -30,5 +44,39 @@ public class PlayerController : MonoBehaviour
             transform.localScale = new Vector3(-1, 1, 1);
 
         animator.SetBool("isMoving", movement != Vector2.zero);
+
+        if (canDash && Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(Dash());
+        }
+
+        if (canAttack && Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            animator.SetTrigger("attack");
+        }
+    }
+
+    private IEnumerator Dash() {
+        isDashing = true;
+        canDash = false;
+        body.velocity = movement * dashSpeed;
+
+        yield return new WaitForSeconds(dashDuration);
+        isDashing = false;
+
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
+    }
+
+    private IEnumerator Attack() {
+        isAttacking = true;
+        canAttack = false;
+
+        // yield return new WaitForSeconds(dashDuration);
+        // isAttacking = false;
+
+        yield return new WaitForSeconds(attackCooldown);
+        isAttacking = false;
+        canAttack = true;
     }
 }
