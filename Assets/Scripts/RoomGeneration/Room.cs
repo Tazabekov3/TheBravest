@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Room : MonoBehaviour
-{
+public class Room : MonoBehaviour {
     [SerializeField] GameObject topDoor;
     [SerializeField] GameObject bottomDoor;
     [SerializeField] GameObject leftDoor;
     [SerializeField] GameObject rightDoor;
     public Vector2Int RoomIndex { get; set; }
+    
     public void OpenDoor (Vector2Int direction) {
         if (direction == Vector2Int.up) topDoor.SetActive(true);
 
@@ -19,15 +19,11 @@ public class Room : MonoBehaviour
         if (direction == Vector2Int.right) rightDoor.SetActive(true);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         
     }
 }

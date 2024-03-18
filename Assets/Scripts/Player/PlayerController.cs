@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
-{
+public class PlayerController : MonoBehaviour {
     public float speed = 5f;
     private Vector2 movement;
     private Rigidbody2D body;
@@ -19,16 +18,12 @@ public class PlayerController : MonoBehaviour
     private bool canAttack = true;
     private float attackCooldown = 0.2f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         body = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         animator.SetBool("isDashing", isDashing);
         if (isDashing) return;
 
@@ -38,22 +33,14 @@ public class PlayerController : MonoBehaviour
         movement = new Vector2(moveHorizontal, moveVertical).normalized;
         body.velocity = movement * speed;
 
-        if (moveHorizontal > 0.01f)
-            transform.localScale = Vector3.one;
-        else if (moveHorizontal < -0.01f)
-            transform.localScale = new Vector3(-1, 1, 1);
+        if (moveHorizontal > 0.01f) transform.localScale = Vector3.one;
+        else if (moveHorizontal < -0.01f) transform.localScale = new Vector3(-1, 1, 1);
 
         animator.SetBool("isMoving", movement != Vector2.zero);
 
-        if (canDash && Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(Dash());
-        }
+        if (canDash && Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Dash());
 
-        if (canAttack && Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            animator.SetTrigger("attack");
-        }
+        if (canAttack && Input.GetKeyDown(KeyCode.Mouse0)) animator.SetTrigger("attack");
     }
 
     private IEnumerator Dash() {
@@ -66,17 +53,5 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
-    }
-
-    private IEnumerator Attack() {
-        isAttacking = true;
-        canAttack = false;
-
-        // yield return new WaitForSeconds(dashDuration);
-        // isAttacking = false;
-
-        yield return new WaitForSeconds(attackCooldown);
-        isAttacking = false;
-        canAttack = true;
     }
 }
