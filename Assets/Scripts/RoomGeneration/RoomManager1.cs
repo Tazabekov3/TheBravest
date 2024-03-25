@@ -10,8 +10,8 @@ public class RoomManager1 : MonoBehaviour {
     int roomWidth = 6;
     int roomHeight = 3;
 
-    int gridSizeX = 10;
-    int gridSizeY = 10;
+    int gridSizeX = 11;
+    int gridSizeY = 11;
 
     private List<GameObject> roomObjects = new List<GameObject>();
     private Queue<Vector2Int> roomQueue = new Queue<Vector2Int>();
@@ -39,6 +39,7 @@ public class RoomManager1 : MonoBehaviour {
             TryGenerateNewRoom(new Vector2Int(gridX, gridY + 1));
         } else if (!generationCompleted) {
             generationCompleted = true;
+            AstarPath.active.Scan();
         }
     }
 
