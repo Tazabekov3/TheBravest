@@ -14,9 +14,9 @@ public class PlayerController : MonoBehaviour {
     private float dashDuration = 0.1f;
     private float dashCooldown = 1f;
 
-    private bool isAttacking = false;
-    private bool canAttack = true;
-    private float attackCooldown = 0.2f;
+    // private bool isAttacking = false;
+    // private bool canAttack = true;
+    // private float attackCooldown = 0.2f;
 
     void Start() {
         body = GetComponent<Rigidbody2D>();
@@ -38,9 +38,9 @@ public class PlayerController : MonoBehaviour {
 
         animator.SetBool("isMoving", movement != Vector2.zero);
 
-        if (canDash && Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Dash());
+        if (canDash && Input.GetButtonDown("Jump") && movement!= Vector2.zero) StartCoroutine(Dash());
 
-        if (canAttack && Input.GetKeyDown(KeyCode.Mouse0)) animator.SetTrigger("attack");
+        // if (canAttack && Input.GetKeyDown(KeyCode.Mouse0)) animator.SetTrigger("attack");
     }
 
     private IEnumerator Dash() {
