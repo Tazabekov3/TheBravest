@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Pathfinding.Util;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -8,6 +10,9 @@ public class InventoryManager : MonoBehaviour {
     public GameObject inventoryMenu;
     private bool menuActive = false;
     private Inventory inventoryList;
+    public Transform slotsChild;
+    public GameObject slotPrefab;
+    public List<InventorySlot> inventorySlots = new List<InventorySlot>();
 
     private void Awake() {
         if (instance == null) {
@@ -18,9 +23,19 @@ public class InventoryManager : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
     }
 
+    void OnEnable() {
+        Inventory.OnInventoryChanged += DrawInventoryUI;
+    }
+
+    void OnDisable() {
+        Inventory.OnInventoryChanged -= DrawInventoryUI;
+    }
+
     void Start() {
         inventoryList = new Inventory();
         Debug.Log(inventoryList.inventory);
+        inventorySlots = new List<InventorySlot>();
+        slotsChild = inventoryMenu.transform.Find("InventorySlots");
     }
 
     void Update() {
@@ -53,5 +68,36 @@ public class InventoryManager : MonoBehaviour {
 
     public void RemoveItem(ItemData itemData) {
         inventoryList.RemoveItem(itemData);
+    }
+
+    Transform FindSlotsChild() {
+        Transform slots = inventoryMenu.transform.Find("InventorySlots");
+        Debug.Log(slots);
+        if (slots != null) return slots;
+        return null;
+    }
+
+    void ClearInventoryUI() {
+        foreach (Transform childTransform in slotsChild) Destroy(childTransform.gameObject);
+        inventorySlots = new List<InventorySlot>();
+    }
+
+    void DrawInventoryUI(List<InventoryItem> inventory) {
+        ClearInventoryUI();
+
+        for (int i = 0; i < inventory.Count; i++) {
+            GameObject newSlot = Instantiate(slotPrefab, slotsChild);
+            newSlot.name = $"InventorySlot-{i + 1}";
+            
+            InventorySlot newSlotScript = newSlot.GetComponent<InventorySlot>();
+            newSlotScript.SetSlot(false);
+
+            inventorySlots.Add(newSlotScript);
+            inventorySlots[i].DrawSlot(inventory[i]);
+        }
+    }
+
+    public void InventoryChanged(List<InventoryItem> inventory) {
+        Debug.Log("Inventory has changed");
     }
 }

@@ -7,8 +7,8 @@ public class RoomManager1 : MonoBehaviour {
     [SerializeField] int minRooms = 10;
     [SerializeField] int maxRooms = 15;
 
-    int roomWidth = 6;
-    int roomHeight = 3;
+    int roomWidth = 12;
+    int roomHeight = 6;
 
     int gridSizeX = 11;
     int gridSizeY = 11;
