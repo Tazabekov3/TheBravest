@@ -32,6 +32,7 @@ public class InventorySlot : MonoBehaviour {
         SetSlot(true);
 
         icon.sprite = item.itemData.itemSprite;
+        icon.preserveAspect = true;
         // nameLabel.text = item.itemData.itemName;
         stackLabel.text = item.stackSize.ToString();
     }

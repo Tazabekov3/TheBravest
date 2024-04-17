@@ -29,7 +29,7 @@ public class EnemyAI1 : MonoBehaviour {
     }
 
     void Update() {
-        Debug.Log(currentState);
+        // Debug.Log(currentState);
 
         switch (currentState) {
             case State.Roaming:

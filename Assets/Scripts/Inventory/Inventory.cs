@@ -6,25 +6,25 @@ using System;
 public class Inventory {
     public static Action<List<InventoryItem>> OnInventoryChanged;
     public List<InventoryItem> inventory = new List<InventoryItem>();
+    public int size;
     public Dictionary<ItemData, InventoryItem> itemDictionary = new Dictionary<ItemData, InventoryItem>();
 
-    // public void AddItem(Item item) {
-    //     inventory.Add(item);
-    // }
-
-    // public void RemoveItem(Item item) {
-    //     inventory.Remove(item);
-    // }
+    public Inventory(int size) {
+        inventory = new List<InventoryItem>(size);
+        this.size = size;
+    }
 
     public void AddItem(ItemData itemData) {
         if (itemDictionary.TryGetValue(itemData, out InventoryItem item)) {
             item.AddToStack();
             OnInventoryChanged?.Invoke(inventory);
         } else {
-            InventoryItem newItem = new InventoryItem(itemData);
-            inventory.Add(newItem);
-            itemDictionary.Add(itemData, newItem);
-            OnInventoryChanged?.Invoke(inventory);
+            if (!isFull()) {
+                InventoryItem newItem = new InventoryItem(itemData);
+                inventory.Add(newItem);
+                itemDictionary.Add(itemData, newItem);
+                OnInventoryChanged?.Invoke(inventory);
+            }
         }
     }
 
@@ -37,5 +37,9 @@ public class Inventory {
             }
             OnInventoryChanged?.Invoke(inventory);
         }
+    }
+
+    public bool isFull() {
+        return inventory.Capacity == inventory.Count;
     }
 }

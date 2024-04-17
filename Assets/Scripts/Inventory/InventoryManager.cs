@@ -32,10 +32,11 @@ public class InventoryManager : MonoBehaviour {
     }
 
     void Start() {
-        inventoryList = new Inventory();
-        Debug.Log(inventoryList.inventory);
-        inventorySlots = new List<InventorySlot>();
+        int inventorySize = 16;
+        inventoryList = new Inventory(inventorySize);
+        inventorySlots = new List<InventorySlot>(inventorySize);
         slotsChild = inventoryMenu.transform.Find("InventorySlots");
+        DrawInventoryUI(inventoryList.inventory);
     }
 
     void Update() {
@@ -85,14 +86,19 @@ public class InventoryManager : MonoBehaviour {
     void DrawInventoryUI(List<InventoryItem> inventory) {
         ClearInventoryUI();
 
-        for (int i = 0; i < inventory.Count; i++) {
-            GameObject newSlot = Instantiate(slotPrefab, slotsChild);
+        for (int i = 0; i < inventory.Capacity; i++) {
+            GameObject newSlot = Instantiate(slotPrefab);
+            newSlot.transform.SetParent(slotsChild, false);
             newSlot.name = $"InventorySlot-{i + 1}";
             
             InventorySlot newSlotScript = newSlot.GetComponent<InventorySlot>();
             newSlotScript.SetSlot(false);
 
             inventorySlots.Add(newSlotScript);
+            // inventorySlots[i].DrawSlot(inventory[i]);
+        }
+
+        for (int i = 0; i < inventory.Count; i++) {
             inventorySlots[i].DrawSlot(inventory[i]);
         }
     }
