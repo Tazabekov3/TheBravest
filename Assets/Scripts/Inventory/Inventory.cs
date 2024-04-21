@@ -16,7 +16,13 @@ public class Inventory {
 
     public void AddItem(ItemData itemData) {
         if (itemDictionary.TryGetValue(itemData, out InventoryItem item)) {
-            item.AddToStack();
+            if (itemData.isStackable) {
+                item.AddToStack();
+            } else {
+                InventoryItem newItem = new InventoryItem(itemData);
+                inventory.Add(newItem);
+                // itemDictionary.Add(itemData, newItem);
+            }
             OnInventoryChanged?.Invoke(inventory);
         } else {
             if (!isFull()) {

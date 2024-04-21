@@ -44,15 +44,16 @@ public class EnemyAI1 : MonoBehaviour {
                 MoveToPosition(player.position);
 
                 if (Vector3.Distance(transform.position, player.position) <= attackRange) {
-                    Attack();
+                    // InvokeRepeating("Attack", 0f, 10f);
                 }
                 break;
             case State.Lost:
-                returnTimer -= Time.deltaTime;
-                if (returnTimer <= 0f) {
-                    MoveToSpawn();
-                    returnTimer = returnDelay;
-                }
+                // returnTimer -= Time.deltaTime;
+                // if (returnTimer <= 0f) {
+                //     MoveToSpawn();
+                //     returnTimer = returnDelay;
+                // }
+                Invoke("MoveToSpawn", returnDelay);
                 break;
             case State.OnSpawn:
                 break;

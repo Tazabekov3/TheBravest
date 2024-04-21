@@ -3,37 +3,46 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
+using System;
 
-public class InventorySlot : MonoBehaviour {
+public class InventorySlot : MonoBehaviour, IPointerDownHandler {
+    public static Action<ItemData, GameObject> SlotActivated;
     public Image icon;
-    // public TextMeshProUGUI nameLabel;
     public TextMeshProUGUI stackLabel;
+    public Image activeFrame;
+    public ItemData itemData;
 
     void Start() {
-        
+        activeFrame.enabled = false;
     }
 
-    void Update() {
-        
+    public void OnPointerDown(PointerEventData eventData) {
+        if (itemData != null) SlotActivated?.Invoke(itemData, this.gameObject);
+        else return;
+        Debug.Log("Clicked");
     }
 
-    public void SetSlot(bool isActive) {
-        icon.enabled = isActive;
-        // nameLabel.enabled = isActive;
-        stackLabel.enabled = isActive;
+    public void SetSlotEnabled(bool isEnabled) {
+        icon.enabled = isEnabled;
+        stackLabel.enabled = isEnabled;
+    }
+
+    public void SetSlotActive(bool isActive) {
+        activeFrame.enabled = isActive;
     }
 
     public void DrawSlot(InventoryItem item) {
         if (item == null) {
-            SetSlot(false);
+            SetSlotEnabled(false);
             return;
         }
 
-        SetSlot(true);
+        SetSlotEnabled(true);
 
-        icon.sprite = item.itemData.itemSprite;
+        itemData = item.itemData;
+        icon.sprite = itemData.itemSprite;
         icon.preserveAspect = true;
-        // nameLabel.text = item.itemData.itemName;
-        stackLabel.text = item.stackSize.ToString();
+        stackLabel.text = item.stackSize <= 1 ? null : item.stackSize.ToString();
     }
 }

@@ -8,11 +8,13 @@ using UnityEngine;
 public class InventoryManager : MonoBehaviour {
     public static InventoryManager instance {get; private set;}
     public GameObject inventoryMenu;
+    // public GameObject abilitiesMenu;
     private bool menuActive = false;
     private Inventory inventoryList;
     public Transform slotsChild;
     public GameObject slotPrefab;
     public List<InventorySlot> inventorySlots = new List<InventorySlot>();
+    private GameObject currentActiveSlot;
 
     private void Awake() {
         if (instance == null) {
@@ -25,10 +27,12 @@ public class InventoryManager : MonoBehaviour {
 
     void OnEnable() {
         Inventory.OnInventoryChanged += DrawInventoryUI;
+        InventorySlot.SlotActivated += SlotSetActive;
     }
 
     void OnDisable() {
         Inventory.OnInventoryChanged -= DrawInventoryUI;
+        InventorySlot.SlotActivated -= SlotSetActive;
     }
 
     void Start() {
@@ -37,11 +41,13 @@ public class InventoryManager : MonoBehaviour {
         inventorySlots = new List<InventorySlot>(inventorySize);
         slotsChild = inventoryMenu.transform.Find("InventorySlots");
         DrawInventoryUI(inventoryList.inventory);
+        inventoryMenu.SetActive(menuActive);
     }
 
     void Update() {
         if (Input.GetButtonDown("Inventory")) {
             inventoryMenu.SetActive(!menuActive);
+            // abilitiesMenu.SetActive(menuActive);
             menuActive = !menuActive;
         }
 
@@ -51,16 +57,6 @@ public class InventoryManager : MonoBehaviour {
                 Debug.Log(stuff.stackSize);
             }
         }
-
-        // if (Input.GetButtonDown("Inventory") && !menuActive) {
-        //     inventoryMenu.SetActive(true);
-        //     menuActive = true;
-        //     Debug.Log("I pressed");
-        // } else if (Input.GetButtonDown("Inventory") && menuActive) {
-        //     inventoryMenu.SetActive(false);
-        //     menuActive = false;
-        //     Debug.Log("I pressed");
-        // }
     }
 
     public void AddItem(ItemData itemData) {
@@ -69,13 +65,6 @@ public class InventoryManager : MonoBehaviour {
 
     public void RemoveItem(ItemData itemData) {
         inventoryList.RemoveItem(itemData);
-    }
-
-    Transform FindSlotsChild() {
-        Transform slots = inventoryMenu.transform.Find("InventorySlots");
-        Debug.Log(slots);
-        if (slots != null) return slots;
-        return null;
     }
 
     void ClearInventoryUI() {
@@ -92,7 +81,7 @@ public class InventoryManager : MonoBehaviour {
             newSlot.name = $"InventorySlot-{i + 1}";
             
             InventorySlot newSlotScript = newSlot.GetComponent<InventorySlot>();
-            newSlotScript.SetSlot(false);
+            newSlotScript.SetSlotEnabled(false);
 
             inventorySlots.Add(newSlotScript);
             // inventorySlots[i].DrawSlot(inventory[i]);
@@ -103,7 +92,9 @@ public class InventoryManager : MonoBehaviour {
         }
     }
 
-    public void InventoryChanged(List<InventoryItem> inventory) {
-        Debug.Log("Inventory has changed");
+    void SlotSetActive(ItemData itemData, GameObject slot) {
+        currentActiveSlot?.GetComponent<InventorySlot>().SetSlotActive(false);
+        slot.GetComponent<InventorySlot>().SetSlotActive(true);
+        currentActiveSlot = slot;
     }
 }

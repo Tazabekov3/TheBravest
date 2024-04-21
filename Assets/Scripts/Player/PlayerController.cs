@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
+    public static PlayerController instance {get; private set;}
     public float speed = 5f;
     private Vector2 movement;
     private Rigidbody2D body;
@@ -12,7 +13,7 @@ public class PlayerController : MonoBehaviour {
     private bool canDash = true;
     private float dashSpeed = 15f;
     private float dashDuration = 0.1f;
-    private float dashCooldown = 1f;
+    public float dashCooldown = 1f;
 
     // private bool isAttacking = false;
     // private bool canAttack = true;
@@ -47,6 +48,12 @@ public class PlayerController : MonoBehaviour {
         isDashing = true;
         canDash = false;
         body.velocity = movement * dashSpeed;
+
+        // dashTimer = dashCooldown;
+        // while (dashTimer > 0) {
+        //     yield return null;
+        //     dashTimer -= 0.1f;
+        // }
 
         yield return new WaitForSeconds(dashDuration);
         isDashing = false;
