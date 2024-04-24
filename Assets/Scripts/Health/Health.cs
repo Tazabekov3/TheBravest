@@ -10,7 +10,7 @@ public class Health : MonoBehaviour {
         currentHealth = maxHealth;
     }
 
-    void Update() {
+    protected virtual void Update() {
         if (currentHealth <= 0) {
             Destroy(gameObject);
         }

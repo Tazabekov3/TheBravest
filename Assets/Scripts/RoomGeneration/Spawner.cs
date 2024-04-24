@@ -5,10 +5,12 @@ using UnityEngine;
 public class Spawner : MonoBehaviour {
     [SerializeField] List<Transform> spawnTemplates;
     [SerializeField] GameObject enemyPrefab;
+    [SerializeField] GameObject finish;
 
     void Start() {
         int index = Random.Range(0, spawnTemplates.Count);
-        SpawnEnemy(spawnTemplates[index]);
+        if (gameObject.GetComponent<Room1>().isFinish) SpawnFinish();
+        else SpawnEnemy(spawnTemplates[index]);
     }
 
     void Update() {
@@ -19,5 +21,9 @@ public class Spawner : MonoBehaviour {
         foreach (Transform childTransform in template) {
             Instantiate(enemyPrefab, childTransform.position, Quaternion.identity);
         }
+    }
+
+    void SpawnFinish() {
+        finish.SetActive(true);
     }
 }

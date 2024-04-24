@@ -91,6 +91,7 @@ public class RoomManager1 : MonoBehaviour {
         newRoom.name = $"Room-{roomCount}";
         newRoom.transform.SetParent(dungeon.transform);
         newRoom.GetComponent<Room1>().RoomIndex = roomIndex;
+        if (roomCount == maxRooms) newRoom.GetComponent<Room1>().isFinish = true;
         roomObjects.Add(newRoom);
 
         OpenDoors(newRoom, x, y);
