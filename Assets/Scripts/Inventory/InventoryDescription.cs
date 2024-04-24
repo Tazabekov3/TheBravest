@@ -10,15 +10,18 @@ public class InventoryDescription : MonoBehaviour {
     public TextMeshProUGUI descriptionLabel;
 
     void OnEnable() {
+        InventoryManager.InventoryMenuClosed += ClearItemDesciption;
         InventorySlot.SlotActivated += DrawItemDescription;
     }
 
     void OnDisable() {
+        InventoryManager.InventoryMenuClosed -= ClearItemDesciption;
         InventorySlot.SlotActivated -= DrawItemDescription;
     }
 
     void Start() {
-        
+        icon.sprite = null;
+        icon.preserveAspect = true;
     }
 
     void Update() {
@@ -28,9 +31,15 @@ public class InventoryDescription : MonoBehaviour {
     public void DrawItemDescription(ItemData itemData, GameObject _gameObject) {
         if (itemData != null) {
             icon.sprite = itemData.itemSprite;
-            icon.preserveAspect = true;
             nameLabel.text = itemData.itemName;
             descriptionLabel.text = itemData.itemDescription;
         }
+    }
+
+    public void ClearItemDesciption() {
+        icon.sprite = null;
+        nameLabel.text = "";
+        descriptionLabel.text = "";
+        Debug.Log("Cleared");
     }
 }

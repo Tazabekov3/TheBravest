@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 public class Inventory {
-    public static Action<List<InventoryItem>> OnInventoryChanged;
+    public static event Action<List<InventoryItem>> OnInventoryChanged;
     public List<InventoryItem> inventory = new List<InventoryItem>();
     public int size;
     public Dictionary<ItemData, InventoryItem> itemDictionary = new Dictionary<ItemData, InventoryItem>();

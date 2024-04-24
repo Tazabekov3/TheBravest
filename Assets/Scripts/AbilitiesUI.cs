@@ -17,7 +17,7 @@ public class AbilitiesUI : MonoBehaviour {
         } else if (instance != null && instance != this) {
             Destroy(gameObject);
         }
-        DontDestroyOnLoad(gameObject);
+        // DontDestroyOnLoad(gameObject);
     }
 
     void Start() {

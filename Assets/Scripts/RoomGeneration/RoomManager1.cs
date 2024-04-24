@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RoomManager1 : MonoBehaviour {
@@ -19,11 +20,13 @@ public class RoomManager1 : MonoBehaviour {
     private int roomCount;
 
     private bool generationCompleted;
+    private GameObject dungeon;
 
     void Start() {
         roomGrid = new int[gridSizeX, gridSizeY];
 
         Vector2Int initialRoomIndex = new Vector2Int(gridSizeX / 2, gridSizeY / 2);
+        dungeon = GetDungeonObject();
         StartRoomGenerationFromRoom(initialRoomIndex);
     }
 
@@ -43,6 +46,14 @@ public class RoomManager1 : MonoBehaviour {
         }
     }
 
+    private GameObject GetDungeonObject() {
+        GameObject dungeon = GameObject.Find("Rooms");
+        if (dungeon == null) {
+            dungeon = new GameObject("Rooms");
+        }
+        return dungeon;
+    }
+
     private void StartRoomGenerationFromRoom(Vector2Int roomIndex) {
         roomQueue.Enqueue(roomIndex);
         int x = roomIndex.x;
@@ -53,6 +64,7 @@ public class RoomManager1 : MonoBehaviour {
         var initialRoom = Instantiate(roomPrefab, GetPositionFromGridIndex(roomIndex), Quaternion.identity);
 
         initialRoom.name = $"Room-{roomCount}";
+        initialRoom.transform.SetParent(dungeon.transform);
         initialRoom.GetComponent<Room1>().RoomIndex = roomIndex;
         roomObjects.Add(initialRoom);
     }
@@ -77,6 +89,7 @@ public class RoomManager1 : MonoBehaviour {
         var newRoom = Instantiate(roomPrefab, GetPositionFromGridIndex(roomIndex), Quaternion.identity);
 
         newRoom.name = $"Room-{roomCount}";
+        newRoom.transform.SetParent(dungeon.transform);
         newRoom.GetComponent<Room1>().RoomIndex = roomIndex;
         roomObjects.Add(newRoom);
 

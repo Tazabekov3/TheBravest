@@ -8,31 +8,39 @@ using UnityEngine;
 public class EnemyAI1 : MonoBehaviour {
     public float roamDistance = 3f;
     public float sightDistance = 6f;
-    public float attackRange = 1f;
-    public Transform attackPoint;
     public float returnDelay = 3f;
+
+    public int damage = 2;
+    public float attackRange = 1f;
+    public float attackCooldown = 2f;
+
     private AIDestinationSetter1 destinationSetter;
+    private AIPath aiPath;
     private Transform player;
-    private float returnTimer;
+    private PlayerController playerController;
+    private float attackTimer;
     [SerializeField] private Vector3 spawnPosition;
     [SerializeField] private Vector3 destinationPosition;
-    private enum State {Roaming, Chasing, Lost, OnSpawn};
+    private enum State {Roaming, Chasing, Lost, Attacking};
     private State currentState;
 
     void Start() {
         destinationSetter = GetComponent<AIDestinationSetter1>();
+        aiPath = GetComponent<AIPath>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        playerController = player.GetComponent<PlayerController>();
+
         spawnPosition = transform.position;
-        returnTimer = returnDelay;
+        attackTimer = attackCooldown;
+        
         currentState = State.Roaming;
         destinationPosition = GetRoamingPosition();
     }
 
     void Update() {
-        // Debug.Log(currentState);
-
         switch (currentState) {
             case State.Roaming:
+                aiPath.canMove = true;
                 MoveToPosition(destinationPosition);
 
                 if (Vector3.Distance(transform.position, destinationPosition) <= 1f) {
@@ -41,37 +49,44 @@ public class EnemyAI1 : MonoBehaviour {
                 }
                 break;
             case State.Chasing:
-                MoveToPosition(player.position);
-
-                if (Vector3.Distance(transform.position, player.position) <= attackRange) {
-                    // InvokeRepeating("Attack", 0f, 10f);
-                }
+                aiPath.canMove = true;
+                if (player != null) MoveToPosition(player.position);
                 break;
             case State.Lost:
-                // returnTimer -= Time.deltaTime;
-                // if (returnTimer <= 0f) {
-                //     MoveToSpawn();
-                //     returnTimer = returnDelay;
-                // }
+                aiPath.canMove = true;
                 Invoke("MoveToSpawn", returnDelay);
                 break;
-            case State.OnSpawn:
+            case State.Attacking:
+                aiPath.canMove = false;
+                if (attackTimer >= attackCooldown) {
+                    Attack();
+                    attackTimer = 0f;
+                }
+                attackTimer += Time.deltaTime;
                 break;
         }
 
-        if (Vector3.Distance(transform.position, player.position) <= sightDistance) {
-            currentState = State.Chasing;
-        } else if (Vector3.Distance(transform.position, spawnPosition) <= roamDistance && 
-                   Vector3.Distance(transform.position, player.position) > sightDistance) {
-            currentState = State.Roaming;
-        } else if (Vector3.Distance(transform.position, player.position) > sightDistance && 
-                   Vector3.Distance(transform.position, spawnPosition) > roamDistance) {
-            currentState = State.Lost;
-        }
+        if (player != null) {
+            if (Vector3.Distance(transform.position, player.position) <= sightDistance &&
+                Vector3.Distance(transform.position, player.position) > attackRange) {
+                currentState = State.Chasing;
+            } else if (Vector3.Distance(transform.position, spawnPosition) <= roamDistance && 
+                    Vector3.Distance(transform.position, player.position) > sightDistance) {
+                currentState = State.Roaming;
+            } else if (Vector3.Distance(transform.position, player.position) > sightDistance && 
+                    Vector3.Distance(transform.position, spawnPosition) > roamDistance) {
+                currentState = State.Lost;
+            } else if (Vector3.Distance(transform.position, player.position) <= attackRange) {
+                currentState = State.Attacking;
+            }
+        } 
     }
 
     void Attack() {
-        Debug.Log("Attack the player");
+        if (player != null && !playerController.invulnerable) {
+            player.GetComponent<Health>().TakeDamage(damage);
+        }
+        Debug.Log("Attacking the player");
     }
 
     void MoveToPosition(Vector3 position) {
@@ -93,6 +108,7 @@ public class EnemyAI1 : MonoBehaviour {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, sightDistance);
         Gizmos.DrawWireSphere(spawnPosition, roamDistance);
+        Gizmos.DrawWireSphere(transform.position, attackRange);
 
         // Gizmos.DrawWireCube(spawnAnchor.position, new Vector3(0.1f, 0.1f, 0.1f));
         // Gizmos.DrawIcon(anchor.position, "Light Gizmo.tiff", true);

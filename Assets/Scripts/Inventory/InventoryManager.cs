@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -7,8 +8,8 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour {
     public static InventoryManager instance {get; private set;}
+    public static event Action InventoryMenuClosed;
     public GameObject inventoryMenu;
-    // public GameObject abilitiesMenu;
     private bool menuActive = false;
     private Inventory inventoryList;
     public Transform slotsChild;
@@ -46,9 +47,13 @@ public class InventoryManager : MonoBehaviour {
 
     void Update() {
         if (Input.GetButtonDown("Inventory")) {
-            inventoryMenu.SetActive(!menuActive);
-            // abilitiesMenu.SetActive(menuActive);
-            menuActive = !menuActive;
+            inventoryMenu.SetActive(!inventoryMenu.activeInHierarchy);
+            // menuActive = !menuActive;
+            if (inventoryMenu.activeInHierarchy) {
+                Debug.Log(InventoryMenuClosed == null);
+                InventoryMenuClosed?.Invoke();
+                if (currentActiveSlot != null) currentActiveSlot.GetComponent<InventorySlot>().SetSlotActive(false);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.O)) {
@@ -93,7 +98,7 @@ public class InventoryManager : MonoBehaviour {
     }
 
     void SlotSetActive(ItemData itemData, GameObject slot) {
-        currentActiveSlot?.GetComponent<InventorySlot>().SetSlotActive(false);
+        if (currentActiveSlot != null) currentActiveSlot.GetComponent<InventorySlot>().SetSlotActive(false);
         slot.GetComponent<InventorySlot>().SetSlotActive(true);
         currentActiveSlot = slot;
     }

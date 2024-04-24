@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using System;
 
 public class InventorySlot : MonoBehaviour, IPointerDownHandler {
-    public static Action<ItemData, GameObject> SlotActivated;
+    public static event Action<ItemData, GameObject> SlotActivated;
     public Image icon;
     public TextMeshProUGUI stackLabel;
     public Image activeFrame;
@@ -15,12 +15,12 @@ public class InventorySlot : MonoBehaviour, IPointerDownHandler {
 
     void Start() {
         activeFrame.enabled = false;
+        icon.preserveAspect = true;
     }
 
     public void OnPointerDown(PointerEventData eventData) {
         if (itemData != null) SlotActivated?.Invoke(itemData, this.gameObject);
         else return;
-        Debug.Log("Clicked");
     }
 
     public void SetSlotEnabled(bool isEnabled) {
@@ -42,7 +42,6 @@ public class InventorySlot : MonoBehaviour, IPointerDownHandler {
 
         itemData = item.itemData;
         icon.sprite = itemData.itemSprite;
-        icon.preserveAspect = true;
         stackLabel.text = item.stackSize <= 1 ? null : item.stackSize.ToString();
     }
 }

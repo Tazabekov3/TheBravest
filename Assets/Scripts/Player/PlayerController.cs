@@ -15,9 +15,7 @@ public class PlayerController : MonoBehaviour {
     private float dashDuration = 0.1f;
     public float dashCooldown = 1f;
 
-    // private bool isAttacking = false;
-    // private bool canAttack = true;
-    // private float attackCooldown = 0.2f;
+    public bool invulnerable = false;
 
     void Start() {
         body = GetComponent<Rigidbody2D>();
@@ -47,16 +45,13 @@ public class PlayerController : MonoBehaviour {
     private IEnumerator Dash() {
         isDashing = true;
         canDash = false;
-        body.velocity = movement * dashSpeed;
+        invulnerable = true;
 
-        // dashTimer = dashCooldown;
-        // while (dashTimer > 0) {
-        //     yield return null;
-        //     dashTimer -= 0.1f;
-        // }
+        body.velocity = movement * dashSpeed;
 
         yield return new WaitForSeconds(dashDuration);
         isDashing = false;
+        invulnerable = false;
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
