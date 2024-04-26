@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour {
     public static InventoryManager instance {get; private set;}
-    public static event Action InventoryMenuClosed;
+    
     public GameObject inventoryMenu;
     private bool menuActive = false;
     private Inventory inventoryList;
@@ -29,32 +29,35 @@ public class InventoryManager : MonoBehaviour {
     void OnEnable() {
         Inventory.OnInventoryChanged += DrawInventoryUI;
         InventorySlot.SlotActivated += SlotSetActive;
+        UIManager.InventoryMenuOpened += DeactivateCurrentSlot;
     }
 
     void OnDisable() {
         Inventory.OnInventoryChanged -= DrawInventoryUI;
         InventorySlot.SlotActivated -= SlotSetActive;
+        UIManager.InventoryMenuOpened -= DeactivateCurrentSlot;
     }
 
     void Start() {
         int inventorySize = 16;
         inventoryList = new Inventory(inventorySize);
         inventorySlots = new List<InventorySlot>(inventorySize);
+        if (inventoryMenu == null) {
+            GameObject.Find("InventoryPanel");
+        }
         slotsChild = inventoryMenu.transform.Find("InventorySlots");
         DrawInventoryUI(inventoryList.inventory);
         inventoryMenu.SetActive(menuActive);
     }
 
     void Update() {
-        if (Input.GetButtonDown("Inventory")) {
-            inventoryMenu.SetActive(!inventoryMenu.activeInHierarchy);
-            // menuActive = !menuActive;
-            if (inventoryMenu.activeInHierarchy) {
-                Debug.Log(InventoryMenuClosed == null);
-                InventoryMenuClosed?.Invoke();
-                if (currentActiveSlot != null) currentActiveSlot.GetComponent<InventorySlot>().SetSlotActive(false);
-            }
-        }
+        // if (Input.GetButtonDown("Inventory")) {
+        //     inventoryMenu.SetActive(!inventoryMenu.activeInHierarchy);
+        //     if (inventoryMenu.activeInHierarchy) {
+        //         // InventoryMenuClosed?.Invoke();
+        //         // if (currentActiveSlot != null) currentActiveSlot.GetComponent<InventorySlot>().SetSlotActive(false);
+        //     }
+        // }
 
         if (Input.GetKeyDown(KeyCode.O)) {
             foreach (InventoryItem stuff in inventoryList.inventory) {
@@ -101,5 +104,9 @@ public class InventoryManager : MonoBehaviour {
         if (currentActiveSlot != null) currentActiveSlot.GetComponent<InventorySlot>().SetSlotActive(false);
         slot.GetComponent<InventorySlot>().SetSlotActive(true);
         currentActiveSlot = slot;
+    }
+
+    void DeactivateCurrentSlot() {
+        if (currentActiveSlot != null) currentActiveSlot.GetComponent<InventorySlot>().SetSlotActive(false);
     }
 }

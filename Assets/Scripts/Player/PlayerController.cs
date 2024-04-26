@@ -38,8 +38,6 @@ public class PlayerController : MonoBehaviour {
         animator.SetBool("isMoving", movement != Vector2.zero);
 
         if (canDash && Input.GetButtonDown("Jump") && movement!= Vector2.zero) StartCoroutine(Dash());
-
-        // if (canAttack && Input.GetKeyDown(KeyCode.Mouse0)) animator.SetTrigger("attack");
     }
 
     private IEnumerator Dash() {
@@ -55,5 +53,12 @@ public class PlayerController : MonoBehaviour {
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
+    }
+
+    public IEnumerator IFrames() {
+        invulnerable = true;
+
+        yield return new WaitForSeconds(1f);
+        invulnerable = false;
     }
 }

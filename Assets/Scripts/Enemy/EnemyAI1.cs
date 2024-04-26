@@ -84,7 +84,7 @@ public class EnemyAI1 : MonoBehaviour {
 
     void Attack() {
         if (player != null && !playerController.invulnerable) {
-            player.GetComponent<Health>().TakeDamage(damage);
+            player.GetComponent<PlayerHealth>().TakeDamage(damage);
         }
         Debug.Log("Attacking the player");
     }

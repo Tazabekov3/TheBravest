@@ -5,18 +5,22 @@ using UnityEngine;
 public class Health : MonoBehaviour {
     public int maxHealth;
     public int currentHealth;
+    protected Animator animator;
 
-    void Start() {
+    protected virtual void Start() {
         currentHealth = maxHealth;
+        animator = GetComponent<Animator>();
     }
 
     protected virtual void Update() {
         if (currentHealth <= 0) {
-            Destroy(gameObject);
+            if (animator != null) animator.SetTrigger("death");
+            Destroy(gameObject, 2f);
         }
     }
 
-    public void TakeDamage(int damage) {
+    public virtual void TakeDamage(int damage) {
+        if (animator != null) animator.SetTrigger("hurt");
         currentHealth -= damage;
     }
 

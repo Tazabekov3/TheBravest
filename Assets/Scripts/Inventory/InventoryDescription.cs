@@ -10,12 +10,12 @@ public class InventoryDescription : MonoBehaviour {
     public TextMeshProUGUI descriptionLabel;
 
     void OnEnable() {
-        InventoryManager.InventoryMenuClosed += ClearItemDesciption;
+        UIManager.InventoryMenuOpened += ClearItemDesciption;
         InventorySlot.SlotActivated += DrawItemDescription;
     }
 
     void OnDisable() {
-        InventoryManager.InventoryMenuClosed -= ClearItemDesciption;
+        UIManager.InventoryMenuOpened -= ClearItemDesciption;
         InventorySlot.SlotActivated -= DrawItemDescription;
     }
 

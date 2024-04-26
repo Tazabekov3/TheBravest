@@ -23,26 +23,55 @@ public class RoomManager1 : MonoBehaviour {
     private GameObject dungeon;
 
     void Start() {
+        // roomGrid = new int[gridSizeX, gridSizeY];
+
+        // Vector2Int initialRoomIndex = new Vector2Int(gridSizeX / 2, gridSizeY / 2);
+        // dungeon = GetDungeonObject();
+        // StartRoomGenerationFromRoom(initialRoomIndex);
+        GenerateRooms();
+    }
+
+    void Update() {
+        // if (roomQueue.Count > 0 && roomCount < maxRooms && !generationCompleted) {
+        //     Vector2Int roomIndex = roomQueue.Dequeue();
+        //     int gridX = roomIndex.x;
+        //     int gridY = roomIndex.y;
+
+        //     TryGenerateNewRoom(new Vector2Int(gridX - 1, gridY));
+        //     TryGenerateNewRoom(new Vector2Int(gridX + 1, gridY));
+        //     TryGenerateNewRoom(new Vector2Int(gridX, gridY - 1));
+        //     TryGenerateNewRoom(new Vector2Int(gridX, gridY + 1));
+        // } else if (roomCount < minRooms) {
+        //     RegenerateRooms();
+        // } else if (!generationCompleted) {
+        //     generationCompleted = true;
+        //     AstarPath.active.Scan();
+        // }
+    }
+
+    private void GenerateRooms() {
         roomGrid = new int[gridSizeX, gridSizeY];
 
         Vector2Int initialRoomIndex = new Vector2Int(gridSizeX / 2, gridSizeY / 2);
         dungeon = GetDungeonObject();
         StartRoomGenerationFromRoom(initialRoomIndex);
-    }
 
-    void Update() {
-        if (roomQueue.Count > 0 && roomCount < maxRooms && !generationCompleted) {
-            Vector2Int roomIndex = roomQueue.Dequeue();
-            int gridX = roomIndex.x;
-            int gridY = roomIndex.y;
+        while (!generationCompleted) {
+            if (roomQueue.Count > 0 && roomCount < maxRooms && !generationCompleted) {
+                Vector2Int roomIndex = roomQueue.Dequeue();
+                int gridX = roomIndex.x;
+                int gridY = roomIndex.y;
 
-            TryGenerateNewRoom(new Vector2Int(gridX - 1, gridY));
-            TryGenerateNewRoom(new Vector2Int(gridX + 1, gridY));
-            TryGenerateNewRoom(new Vector2Int(gridX, gridY - 1));
-            TryGenerateNewRoom(new Vector2Int(gridX, gridY + 1));
-        } else if (!generationCompleted) {
-            generationCompleted = true;
-            AstarPath.active.Scan();
+                TryGenerateNewRoom(new Vector2Int(gridX - 1, gridY));
+                TryGenerateNewRoom(new Vector2Int(gridX + 1, gridY));
+                TryGenerateNewRoom(new Vector2Int(gridX, gridY - 1));
+                TryGenerateNewRoom(new Vector2Int(gridX, gridY + 1));
+            } else if (roomCount < minRooms) {
+                RegenerateRooms();
+            } else if (!generationCompleted) {
+                generationCompleted = true;
+                AstarPath.active.Scan();
+            }
         }
     }
 
@@ -97,6 +126,18 @@ public class RoomManager1 : MonoBehaviour {
         OpenDoors(newRoom, x, y);
 
         return true;
+    }
+
+    private void RegenerateRooms() {
+        roomObjects.ForEach(Destroy);
+        roomObjects.Clear();
+        roomGrid = new int[gridSizeX, gridSizeY];
+        roomQueue.Clear();
+        roomCount = 0;
+        generationCompleted = false;
+        
+        Vector2Int initialRoomIndex = new Vector2Int(gridSizeX / 2, gridSizeY / 2);
+        StartRoomGenerationFromRoom(initialRoomIndex);
     }
 
     private void OpenDoors(GameObject room, int x, int y) {
